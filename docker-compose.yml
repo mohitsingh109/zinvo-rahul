@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: invoice-management-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: invoice-management
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user123
+    ports:
+      - "5434:5432" # Port mapping (5434 on host to avoid clashing with local Postgres instances on 5432/5433)
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  localstack:
+    image: localstack/localstack:3.8
+    container_name: zinvo-invoice-localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - DEBUG=0
+      - S3_CORS_ALLOW_ORIGIN=*
+      - ENFORCE_IAM_POLICIES=false
+    volumes:
+      - localstack_data:/var/lib/localstack
+      - ./scripts/init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  postgres_data:
+  localstack_data:
