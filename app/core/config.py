@@ -1,4 +1,4 @@
-import os # Python package
+import os  # Python package
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
