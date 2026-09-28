@@ -8,4 +8,5 @@ app.include_router(api_router)
 
 @app.get("/health")
 def health():
+    # kafka consumer health check + other stuff
     return {"status": "ok"}
